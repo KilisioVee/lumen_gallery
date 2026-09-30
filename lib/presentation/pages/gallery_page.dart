@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
-import '../../main.dart';
 import '../widgets/corridor_painter_widget.dart';
 import '../widgets/panel_widget.dart';
 import '../widgets/projected_art_widget.dart';
