@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:gallery_walkthrough/presentation/widgets/projected_art_widget.dart';
@@ -9,9 +10,10 @@ import '../pages/art_page.dart';
 import '../pages/camera_page.dart';
 
 class CorridorPainter extends CustomPainter {
-  CorridorPainter(this.camera, this.paintings);
+  CorridorPainter(this.camera, this.paintings, this.images);
   final Camera camera;
   final List<ProjectedArt> paintings;
+  final Map<String, ui.Image> images;
 
   void surface(Canvas canvas, List<V3> corners, Color color) {
     final points = camera.surface(corners);
@@ -27,7 +29,7 @@ class CorridorPainter extends CustomPainter {
     canvas.drawRect(
         Offset.zero & size, Paint()..color = const Color(0xFFF7F3EA));
 
-    const start = -8.0, end = 30.0, width = 2.2, height = 3.5;
+    const start = -8.0, end = 60.0, width = 2.2, height = 3.5;
 
     surface(
         canvas,
@@ -128,7 +130,7 @@ class CorridorPainter extends CustomPainter {
       canvas.drawShadow(path, const Color(0x77000000), 3, false);
       canvas.save();
       canvas.transform(quadMatrix(painting.points, 180, 220).storage);
-      paintArt(canvas, const Size(180, 220), painting.art);
+      paintArt(canvas, const Size(180, 220), images[painting.art.artImage]);
       canvas.restore();
     }
     canvas.restore();
@@ -170,39 +172,36 @@ Matrix4 quadMatrix(List<Offset> p, double width, double height) {
   matrix.setEntry(3, 3, 1);
   return matrix;
 }
-void paintArt(Canvas canvas, Size size, Art art) {
+Rect _coverSource(ui.Image image, Size target) {
+  final imageAspect = image.width / image.height;
+  final targetAspect = target.width / target.height;
+
+  if (imageAspect > targetAspect) {
+    final w = image.height * targetAspect;
+    return Rect.fromLTWH(
+        (image.width - w) / 2, 0, w, image.height.toDouble());
+  }
+  final h = image.width / targetAspect;
+  return Rect.fromLTWH(
+      0, (image.height - h) / 2, image.width.toDouble(), h);
+}
+void paintArt(Canvas canvas, Size size, ui.Image? image) {
   final outer = Offset.zero & size;
   canvas.drawRect(outer, Paint()..color = const Color(0xFF654932));
   canvas.drawRect(outer.deflate(3), Paint()..color = const Color(0xFFC6AC7F));
   canvas.drawRect(outer.deflate(7), Paint()..color = const Color(0xFFF5EDDC));
 
   final inner = outer.deflate(15);
-  canvas.save();
-  canvas.clipRect(inner);
-  canvas.drawRect(
+
+  if (image == null) {
+    canvas.drawRect(inner, Paint()..color = const Color(0xFFE4DED2));
+    return;
+  }
+
+  canvas.drawImageRect(
+    image,
+    _coverSource(image, inner.size),
     inner,
-    Paint()
-      ..shader = LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: art.colors,
-      ).createShader(inner),
+    Paint()..filterQuality = FilterQuality.medium,
   );
-  canvas.drawCircle(
-    Offset(size.width * 0.66, size.height * 0.32),
-    size.width * 0.19,
-    Paint()
-      ..color = const Color(0x44FFFFFF)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 7,
-  );
-  final hill = Path()
-    ..moveTo(inner.left, inner.bottom * 0.8)
-    ..quadraticBezierTo(
-        size.width * 0.4, size.height * 0.43, inner.right, inner.bottom * 0.73)
-    ..lineTo(inner.right, inner.bottom)
-    ..lineTo(inner.left, inner.bottom)
-    ..close();
-  canvas.drawPath(hill, Paint()..color = const Color(0x33000000));
-  canvas.restore();
 }

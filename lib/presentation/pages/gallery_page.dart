@@ -1,8 +1,12 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 
 import '../widgets/corridor_painter_widget.dart';
@@ -39,6 +43,7 @@ class _GalleryPageState extends State<GalleryPage>
 
   double get _viewYaw => (_yaw + _tiltYaw).clamp(-_maxYaw, _maxYaw);
   double get _viewPitch => (_pitch + _tiltPitch).clamp(-0.18, 0.18);
+  final Map<String, ui.Image> _imagesList = {};
 
   @override
   void initState() {
@@ -70,8 +75,24 @@ class _GalleryPageState extends State<GalleryPage>
     })..start();
 
     _startTilt();
+    _loadImages();
   }
-
+  Future<void> _loadImages() async {
+    for (final art in collection) {
+      try {
+        final data = await rootBundle.load(art.artImage);
+        final codec = await ui.instantiateImageCodec(
+          data.buffer.asUint8List(),
+          targetWidth: 900,
+        );
+        final frame = await codec.getNextFrame();
+        if (!mounted) return;
+        setState(() => _imagesList[art.artImage] = frame.image);
+      } catch (e) {
+        debugPrint('Could not load ${art.artImage}: $e');
+      }
+    }
+  }
   void _startTilt() {
     _gyroSub?.cancel();
 
@@ -109,6 +130,7 @@ class _GalleryPageState extends State<GalleryPage>
   void dispose() {
     _gyroSub?.cancel();
     _ticker.dispose();
+
     super.dispose();
   }
 
@@ -135,7 +157,7 @@ class _GalleryPageState extends State<GalleryPage>
             SizedBox(
               width: 180,
               height: 220,
-              child: CustomPaint(painter: ArtPreview(art)),
+              child: CustomPaint(painter: ArtPreview(_imagesList[art.artImage])),
             ),
             const SizedBox(height: 22),
             Text(art.title,
@@ -201,7 +223,7 @@ class _GalleryPageState extends State<GalleryPage>
                 },
                 child: CustomPaint(
                   size: screenSize,
-                  painter: CorridorPainter(camera, paintings),
+                  painter: CorridorPainter(camera, paintings, _imagesList),
                 ),
               ),
             ),
