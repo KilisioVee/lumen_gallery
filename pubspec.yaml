@@ -37,6 +37,15 @@ dependencies:
   sensors_plus: ^7.1.0
 
 dev_dependencies:
+  flutter_launcher_icons: "^0.14.4"
+
+flutter_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  image_path: "assets/png/logo.png"
+
+
   flutter_test:
     sdk: flutter
 
@@ -61,6 +70,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/jpg/
+    - assets/png/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

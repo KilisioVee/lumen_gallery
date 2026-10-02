@@ -236,12 +236,13 @@ class _GalleryPageState extends State<GalleryPage>
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Row(children: [
-                    const Panel(
+                     Panel(
                       child: Padding(
                         padding:
                         EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                         child: Row(children: [
-                          Icon(Icons.account_balance_outlined, size: 22),
+                          Image.asset("assets/png/logo.png",width: 50,height: 50,),
+                          //Icon(Icons.account_balance_outlined, size: 22),
                           SizedBox(width: 10),
                           Text('GALLERIE WALK',
                               style: TextStyle(
