@@ -4,9 +4,6 @@ import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:gallery_walkthrough/presentation/widgets/projected_art_widget.dart';
 import 'package:gallery_walkthrough/presentation/widgets/v3_widget.dart';
-
-import '../../main.dart';
-import '../pages/art_page.dart';
 import '../pages/camera_page.dart';
 
 class CorridorPainter extends CustomPainter {
@@ -29,7 +26,7 @@ class CorridorPainter extends CustomPainter {
     canvas.drawRect(
         Offset.zero & size, Paint()..color = const Color(0xFFF7F3EA));
 
-    const start = -8.0, end = 60.0, width = 2.2, height = 3.5;
+    const start = -8.0, end = 75.0, width = 2.2, height = 3.5;
 
     surface(
         canvas,

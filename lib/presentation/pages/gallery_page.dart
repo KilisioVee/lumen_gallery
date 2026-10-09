@@ -39,10 +39,10 @@ class _GalleryPageState extends State<GalleryPage>
   bool _tiltEnabled = true;
   bool _invertTilt = false;
 
-  static const double _maxYaw = math.pi / 2; // -90..+90 = 180 degrees.
+  static const double _maxYaw = math.pi / 0.5; // -90..+90 = 180 degrees.
 
   double get _viewYaw => (_yaw + _tiltYaw).clamp(-_maxYaw, _maxYaw);
-  double get _viewPitch => (_pitch + _tiltPitch).clamp(-0.18, 0.18);
+  double get _viewPitch => (_pitch + _tiltPitch).clamp(-0.28, 0.28);
   final Map<String, ui.Image> _imagesList = {};
 
   @override
@@ -135,7 +135,7 @@ class _GalleryPageState extends State<GalleryPage>
   }
 
   void _move(double amount) => setState(() {
-    _targetPosition = (_targetPosition + amount).clamp(0.0, 22.0);
+    _targetPosition = (_targetPosition + amount).clamp(0.0, 120);
     _guide = false;
   });
 
